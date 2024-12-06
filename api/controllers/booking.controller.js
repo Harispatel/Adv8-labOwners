@@ -76,6 +76,10 @@ export const getBookings = async (req, res, next) => {
     const startIndex = parseInt(req.query.startIndex) || 0;
 
     // let nabh = req.query.nabh;
+    let category = req.query.category;
+    if (category === undefined || category === 'all') {
+      category = { $in: ['lab', 'doc', 'hospital'] };
+    }
 
     // if (nabh === undefined || nabh === 'false') {
     //   nabh = { $in: [false, true] };
@@ -93,6 +97,7 @@ export const getBookings = async (req, res, next) => {
 
     const bookings = await Booking.find({
       name: { $regex: searchTerm, $options: 'i' },
+      category,
     })
       .sort({ [sort]: order })
       .limit(limit)

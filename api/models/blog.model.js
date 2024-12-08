@@ -18,6 +18,11 @@ const blogSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    likes: {
+      type: Array,
+      default: [],
+      required: false,
+    },
   },
   { timestamps: true }
 );

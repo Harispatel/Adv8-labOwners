@@ -14,7 +14,6 @@ export const createBlog = async (req, res, next) => {
   try {
     const blog = await Blog.create(req.body);
     //console.log(blog.json)
-    console.log("Blog Added Successfully")
     return res.status(201).json(blog);
   } catch (error) {
     next(error);
@@ -61,6 +60,40 @@ export const updateBlog = async (req, res, next) => {
     );
     res.status(200).json(updatedBlog);
   } catch (error) {
+    next(error);
+  }
+};
+
+export const updateBlogLikes = async (req, res, next) => {
+  try {
+    const blog = await Blog.findById(req.params.id);
+
+    if (!blog) {
+      return next(errorHandler(404, 'Blog not found!'));
+    }
+
+    // Toggle likes using array of user IDs
+    const action = req.body.action; // true or false
+    const userId = req.user.id;
+
+
+    if (action === true) {
+      if (!blog.likes.includes(userId)) {
+        blog.likes.push(userId);
+      }
+    } else if (action === false ) {
+      blog.likes = blog.likes.filter(id => id !== userId);
+    }
+
+    await blog.save();
+
+    res.status(200).json({
+      success: true,
+      likes: blog.likes,
+      likesCount: blog.likes.length
+    });
+  } catch (error) {
+    console.error("Returned Error", error);
     next(error);
   }
 };
